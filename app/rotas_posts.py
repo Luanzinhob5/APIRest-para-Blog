@@ -1,6 +1,9 @@
 from flask import Blueprint, request, jsonify
-from .models import Post
+from .modelos import Post
 from . import db
+from .schemas import PostCriarSchema
+from pydantic import ValidationError
+
 
 posts_bp = Blueprint('posts', __name__)
 
@@ -8,22 +11,18 @@ posts_bp = Blueprint('posts', __name__)
 # Rota de criação de um novo post
 @posts_bp.route('/posts', methods=["POST"])
 def criar_post():
-    dados = request.get_json()
+    dados_json = request.get_json()
 
-    if not dados or not 'titulo' in dados:
-        return jsonify(response={"error": "O titulo e obrigatorio."}), 400
-
-    novo_post = Post(
-            titulo=dados['titulo'],
-            descricao=dados.get("descricao", ''),
-            conteudo=dados.get("conteudo", '')
-        )
     try:
-        db.session.add(novo_post)
-        db.session.commit()
-        return jsonify(novo_post.to_dict()), 201
-    except Exception as e:
-        return jsonify(response={"error": str(e)}), 500
+        dados_post = PostCriarSchema(**dados_json)
+    except ValidationError as e:
+        return jsonify(e.errors()), 400
+    
+    novo_post = Post(**dados_post.model_dump())
+    db.session.add(novo_post)
+    db.session.commit()
+
+    return jsonify(novo_post.to_dict()), 201
         
     
 # Rota para colher os dados de todos os posts

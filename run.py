@@ -1,5 +1,5 @@
 from app import criar_app, db
-from app.models import Post
+from app.modelos import Post
 
 app = criar_app()
 
