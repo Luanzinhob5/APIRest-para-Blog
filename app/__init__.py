@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from .config import Config
+from flask_jwt_extended import JWTManager
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -9,6 +10,8 @@ bcrypt = Bcrypt()
 def criar_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+
+    jwt = JWTManager(app)
     db.init_app(app)
     bcrypt.init_app(app)
 
@@ -19,5 +22,8 @@ def criar_app(config_class=Config):
     
     from .rotas_posts import posts_bp
     app.register_blueprint(posts_bp, url_prefix='/api')
+
+    from .rota_usuarios import auth_bp
+    app.register_blueprint(auth_bp, url_prefix='/auth')
     
     return app

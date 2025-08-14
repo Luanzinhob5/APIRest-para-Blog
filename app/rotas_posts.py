@@ -3,6 +3,7 @@ from .modelos import Post
 from . import db
 from .schemas import PostCriarSchema
 from pydantic import ValidationError
+from flask_jwt_extended import jwt_required
 
 
 posts_bp = Blueprint('posts', __name__)
@@ -10,6 +11,7 @@ posts_bp = Blueprint('posts', __name__)
 
 # Rota de criação de um novo post
 @posts_bp.route('/posts', methods=["POST"])
+@jwt_required()
 def criar_post():
     dados_json = request.get_json()
 
@@ -44,6 +46,7 @@ def encontrar_post_id(id):
 
 # Rota que muda os dados de um post
 @posts_bp.route('/posts/<int:id>', methods=['PUT'])
+@jwt_required()
 def alterar_post_id(id):
     post = Post.query.get_or_404(id)
     data = request.get_json()
@@ -57,6 +60,7 @@ def alterar_post_id(id):
     return jsonify(post.to_dict())
 
 @posts_bp.route('/posts/<int:id>', methods=['DELETE'])
+@jwt_required()
 def deletar_post_id(id):
     post = Post.query.get_or_404(id)
     db.session.delete(post)
