@@ -23,15 +23,6 @@ class Post(db.Model):
     titulo = db.Column(db.String(100), nullable=False)
     descricao = db.Column(db.String(200), nullable=False)
     conteudo = db.Column(db.String(20000), nullable=False)
-
-    #Converte o post para um dicionario
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "titulo": self.titulo,
-            "descricao": self.descricao,
-            "conteudo": self.conteudo
-        }
     
     def __repr__(self):
         return f"<Post {self.titulo}>"

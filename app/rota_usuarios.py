@@ -1,9 +1,8 @@
-import jwt
-from datetime import datetime, timedelta, timezone
-from flask import request, jsonify, current_app, Blueprint
+from flask import request, jsonify, Blueprint
 from .modelos import Usuario 
 from . import db
 from flask_jwt_extended import create_access_token
+from sqlalchemy import select
 
 auth_bp = Blueprint("usuarios", __name__)
 
@@ -13,7 +12,8 @@ def registrar():
     if not data or not 'username' in data or not 'password' in data:
         return jsonify({'message': 'Usuario e senha sao obrigatorios'}), 400
     
-    if Usuario.query.filter_by(username=data['username']).first():
+    nome_usuario = select(Usuario).where(Usuario.username == data['username'])
+    if db.session.scalar(nome_usuario) is not None:
         return jsonify({'message': 'Usuario ja existe'}), 409
     
     novo_usuario = Usuario(username=data['username'])
@@ -29,7 +29,8 @@ def login():
     if not data or not 'username' in data or not 'password' in data:
         return jsonify({'message': 'Usuario e senha sao obrigatorios'}), 400
     
-    usuario = Usuario.query.filter_by(username=data['username']).first()
+    nome_usuario = select(Usuario).where(Usuario.username == data['username'])
+    usuario = db.session.scalar(nome_usuario)
 
     if usuario and usuario.check_password(data['password']):
 
