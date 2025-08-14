@@ -1,13 +1,16 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 from .config import Config
 
 db = SQLAlchemy()
+bcrypt = Bcrypt()
 
 def criar_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
     db.init_app(app)
+    bcrypt.init_app(app)
 
     from . import errors
     app.register_error_handler(404, errors.handle_not_found)

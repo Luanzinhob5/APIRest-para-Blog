@@ -1,13 +1,10 @@
 import pytest
 from app import criar_app, db
+from app.config import TestConfig
 
 @pytest.fixture(scope='module')
 def app():
-    app = criar_app()
-    app.config.update({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"
-    })
+    app = criar_app(TestConfig)
 
     yield app
 
