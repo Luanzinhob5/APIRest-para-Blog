@@ -11,7 +11,6 @@ def criar_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    jwt = JWTManager(app)
     db.init_app(app)
     bcrypt.init_app(app)
 
